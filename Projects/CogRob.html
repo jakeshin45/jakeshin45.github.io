@@ -10,7 +10,7 @@
 	<a href = "../index.html">[Back to the Main Page]</a><br/>
 	<h1>15-694 Cognitive Robotics Final Project</h1>
 	<h2>Partial Cube Detection</h2>
-	<h3>Instructor: Professor Dave Touretzky</h3>
+	<h3>Instructor: Professor <a href = "http://www.cs.cmu.edu/~dst/">Dave Touretzky</a></h3>
 	<a href = "https://www.cs.cmu.edu/afs/cs/academic/class/15494-s20/" target="_blank">[Course WebPage]</a>
 	<a href = "https://www.cs.cmu.edu/afs/cs/academic/class/15494-s20/projects/cubes.html" target="_blank">[Project Instructions]</a>
 	<br/><br/>
@@ -20,10 +20,52 @@
 	<hr/>
 	<h3>2. Robot and Software</h3>
 	<p>At this project, I have used the <a href = "https://anki.com/en-us/cozmo.html">Cozmo</a>. Details of 'How does the Cozmo work?' can be found at <a href = "https://www.cs.cmu.edu/afs/cs/academic/class/15494-s20/schedule.html" target="_blank">here</a>. Base code that operates the Cozmo for this project and this course can be found at <a href = "https://github.com/touretzkyds/cozmo-tools" target="_blank">here</a>.</p>
+	<p>I use the <a href = "https://opencv.org/">OpenCV</a> when I handle images</p>
 	<p>For the training and testing the partial cube detection, I used the <a href = "https://pytorch.org/" target="_blank">PyTorch</a>.</p>
 	<hr/>
 	<h3>3. Data Collection</h3>
 	<p>Even though the Professor Touretzky suggested collecting the image data by Cozmo's camera with his <a href = "https://www.cs.cmu.edu/afs/cs/academic/class/15494-s20/projects/cubes/">TakePictures.fsm</a> code, I decided to collect the data by my smartphone (iPhone 7+) since placing Cozmo, checking his vision at computer, then taking picture requires much more labor and time than needed. However, data collected by Cozmo can be more exquisite, and more helpful for making better neural network. If time permits, I will try to collect the data by Cozmo, then compare the performance.</p>
+	
+	<h4>3.1 Training Data Images</h4>
+	<p>All raw images, taken from the smart-phone, have 4032 pixels width, and 3024 pixels height. Thus, the aspect ratio of all raw images is 4 : 3.</p>
+	<p>These are some of my raw images with cubes.<br/><br/>
+    <img src = "Images/CogRob_Images/YesCube1.JPG" width = "155" height = "100">
+    <img src = "Images/CogRob_Images/YesCube2.JPG" width = "155" height = "100">
+    <img src = "Images/CogRob_Images/YesCube3.JPG" width = "155" height = "100">
+    <img src = "Images/CogRob_Images/YesCube4.JPG" width = "155" height = "100">
+    <img src = "Images/CogRob_Images/YesCube5.JPG" width = "155" height = "100">
+    <img src = "Images/CogRob_Images/YesCube6.JPG" width = "155" height = "100">
+    <img src = "Images/CogRob_Images/YesCube7.JPG" width = "155" height = "100">
+    <img src = "Images/CogRob_Images/YesCube8.JPG" width = "155" height = "100">
+    </p>
+    <p>These are some of my raw images with no cube.<br/><br/>
+    <img src = "Images/CogRob_Images/NoCube1.JPG" width = "155" height = "100">
+    <img src = "Images/CogRob_Images/NoCube2.JPG" width = "155" height = "100">
+    <img src = "Images/CogRob_Images/NoCube3.JPG" width = "155" height = "100">
+    <img src = "Images/CogRob_Images/NoCube4.JPG" width = "155" height = "100">
+    <img src = "Images/CogRob_Images/NoCube5.JPG" width = "155" height = "100">
+    <img src = "Images/CogRob_Images/NoCube6.JPG" width = "155" height = "100">
+    <img src = "Images/CogRob_Images/NoCube7.JPG" width = "155" height = "100">
+    <img src = "Images/CogRob_Images/NoCube8.JPG" width = "155" height = "100">
+    </p>
+    <h4>3.2 Editing Raw Images to Cozmo's perspective</h4>
+    <p>As I mentioned above, these images are taken by smart-phone camera instead of the Cozmo's camera. At testing, images directly taken from the Cozmo's camera will be an input image of the neural network. Thus, it is necessary to make our training images similar to image taken from the Cozmo.</p>
+    <p>This is how Cozmo sees the world with his camera. The width of the image is 320 pixels, and height of the image is 240 pixels. Thus, the aspect ratio is 4 : 3. Also, the image is in grayscale.<br/>
+    <img src = "Images/CogRob_Images/CozmoView.jpg">
+    </p>
+
+    <p>Fortunately, images from the Cozmo's camera has same aspect ratio as images from the smartphone. Thus, we only need to resize the image (divide both width and height with 12.6), then change RGB colors into grayscale.<br/><br/>
+    <img src = "Images/CogRob_Images/ImageTransform.jpg" width = "650" height = "300">
+    </p>
+    <h4>3.3 Cropping and Fliping the training images</h4>
+    <p>As introduced in Section 1, and <a href = "https://www.cs.cmu.edu/afs/cs/academic/class/15494-s20/projects/cubes.html" target="_blank">Project Instruction</a>, our final goal is 1) to make the Cozmo to find the partial cube, then 2) turn to the direction where partial cube exists (left or right) so that the Cozmo can see the full cube at the end. To achieve this, all images (320 width x 240 height) in the training set should be labeled as <strong>left</strong>, <strong>right</strong>, or <strong>No Cube</strong>. However, we can simplify the problem by setting up one essential rule when collecting the data, and using the <i>flip</i> function in the OpenCV.</p>
+    <p>1. When collecting the data (taking a picture), always locate partial/full cube at right half side.<br/> 2. After editing process (Section 3.2), cut each image (320 width x 240 height) data into half (two 160 width x 240 height). Then left half of the image will be an 160 x 240 image with no cube, and right half of the image will be an 160 x 240 iamge with partial/full cube.<br/>3. Double each image by flipping it horizontally.<br/>4. Now, there are two 160x240 images with no cube. Label these two images as <strong>"No cube exists (Class 0)"</strong>. Also, there are two 160x240 images with partial/full cube. Label these two images as <strong>"Cube exists (Class 1)"</strong></p>
+    <p>So, now number of labels decreases from 3 <strong>(Left, Right, No Cube)</strong> to 2 <strong>(Cube exist, No Cube exist)</strong>. This makes our neural network task easier (because neural network just needs to decide whether cube exists in the image or not, and don't have to care whether partial cube is at the left side or right side.</p>
+    <p>Instead of simplifying the problem, we will let the Cozmo to figure out whether partial cube is at left side or at right side. More details will be at later section with Cozmo.</p>
+    <img src = "Images/CogRob_Images/CropProcess.jpg" width = "650" height = "500">
+    <p>In addition, when 320 width x 240 height image with no cube is provided, four 160 width x 240 height image datasets with 'No cube exists' label will be generated.
+    <hr/>
+    <h3>Reference</h3>
 	<hr/>
 	<i>Updated at April 2020</i>
 </body>
