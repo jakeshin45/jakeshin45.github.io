@@ -57,33 +57,8 @@
     <p>Fortunately, images from the Cozmo's camera has same aspect ratio as images from the smartphone. Thus, we only need to resize the image (divide both width and height with 12.6), then change RGB colors into grayscale.<br/><br/>
     <img src = "Images/CogRob_Images/ImageTransform.jpg" width = "650" height = "300">
     </p>
-    <h4>3.3 Cropping and Fliping the training images</h4>
-    <p>As introduced in Section 1, and <a href = "https://www.cs.cmu.edu/afs/cs/academic/class/15494-s20/projects/cubes.html" target="_blank">Project Instruction</a>, our final goal is 1) to make the Cozmo to find the partial cube, then 2) turn to the direction where partial cube exists (left or right) so that the Cozmo can see the full cube at the end. To achieve this, all images (320 width x 240 height) in the training set should be labled as <strong>left</strong>, <strong>right</strong>, or <strong>No Cube</strong>. However, we can simplify the problem by setting up one essential rule when collecting the data, and using the <i>flip</i> function in the OpenCV.</p>
-    <p>1. When collecting the data (taking a picture), always locate partial/full cube at right half side.<br/> 2. After editing process (Section 3.2), cut each image (320 width x 240 height) data into half (two 160 width x 240 height). Then left half of the image will be an 160 x 240 image with no cube, and right half of the image will be an 160 x 240 iamge with partial/full cube.<br/>3. Double each image by flipping it horizontally.<br/>4. Now, there are two 160x240 images with no cube. Lable these two images as <strong>"No cube exists (Class 0)"</strong>. Also, there are two 160x240 images with partial/full cube. Lable these two images as <strong>"Cube exists (Class 1)"</strong></p>
-    <p>So, now number of lables decreases from 3 <strong>(Left, Right, No Cube)</strong> to 2 <strong>(Cube exist, No Cube exist)</strong>. This makes our neural network task easier (because neural network just needs to decide whether cube exists in the image or not, and don't have to care whether partial cube is at the left side or right side.</p>
-    <p>Instead of simplifying the problem, we will let the Cozmo to figure out whether partial cube is at left side or at right side. More details will be at later section with Cozmo.</p>
-    <img src = "Images/CogRob_Images/CropProcess.jpg" width = "650" height = "500">
-    <p>In addition, when 320 width x 240 height image with no cube is provided, four 160 width x 240 height image datasets with 'No cube exists' lable will be generated.
     <hr/>
-    <h3>4. Neural Networks</h3>
-    <p>Now, I will set up the neural network, then keep optimize it to improve the accuracy. Before setting up the neural network, I have collected 307 training images with a cube, 310 training images without a cube, and 17 test images with a cube. All images go through processes at <i>Section 3.3</i>. <br/><br/>Thus, after this process, <br/> 1) 307 training images (320x240) with a cube are divided into 614 training images (160x240) with a cube <strong>(Class 1 Lable)</strong> and 614 training images (160x240) without a cube <strong>(Class 0 Lable)</strong><br/> 2) 310 training images (320x240) without a cube are divided into 1240 training images (160x240) without a cube <strong>(Class 0 Lable)</strong><br/> 3) 17 test images (320x240) with a cube are divided into 34 test images (160x240) with a cube <strong>(Class 1 Lable)</strong> and 34 test images (160x240) without a cube <strong>(Class 0 Lable)</strong>. Some examples of these images can be found at <i>Section 3.1</i>.</p>
-    <h4>4.0 Suggested Network</h4>
-    <p>At this section, I have only used dataset 1) and 3) since dataset 1) provides equal number of Class 1 and Class 0 image data.<br/>As a starting point, I decided to use the neural network that Professor Touretzkey suggested <a href = "https://www.cs.cmu.edu/afs/cs/academic/class/15494-s20/projects/cubes/CubeDetector1.py" target = "_blank">[CubeDetector1].</a> Here is a details of the network.<br/><br/><img src = "Images/CogRob_Images/SuggestedNN.png" width = "650" height = "300"><br/>I have used 30 epochs, Cross Entropy Loss as a criterion, and Stochastic gradient descent (SGD) as a optimizer. And this is a training result.<br/><br/><img src = "Images/CogRob_Images/sugg_training.png" width = "400" height = "500"><br/>At last epoch, the network shows ~95% accuracy on its training image set.</p>
-    <p>This is a testing result, and analysis.<br/><img src = "Images/CogRob_Images/sugg_testing.png"><br/><img src = "Images/CogRob_Images/sugg_analysis.png"><br/>From the analysis chart above, we can see that there is high percentage (38.23%) of the false positive. In other words, our neural network cannot distinguish background in Class 0 image and the partial cube. To reduce false positive rate, and improve test accuracy, I will try 3 methods.</p>
-    <p> 1) Add more Class 0 images (without cube), then induce the neural network to distinguish black cubes to backgrounds better. Dataset 2) in Section 4 will be used as extra class 0 images. (Section 4.1) <br/>
-    2) Try more deeper and sophisticated neural networks to relieve the overfitting problem.<br/>
-    3) Add more Class 1 images (with cube), then builds a stronger neural network.</p>
-    <h4>4.1 Suggested Network + Extra Class 0 (without cube) images</h4>
-    <p>At this section, I used both 1) and 2) datasets for training the neural network. Thus, there are 614 Class 1 Label (with a cube) and 1854 (614+1240) Class 0 Label (without a cube). Other conditions are same. Still used 30 epochs, Cross Entropy Loss as a criterion, and Stochastic gradient descent (SGD) as a optimizer. And this is a training result.<br/><img src = "Images/CogRob_Images/sugg_training_2.png"><br/>At last epoch, the network shows ~97% accuracy on its training image set.</p>
-    <p>This is a testing result</p>
-    <img src = "Images/CogRob_Images/sugg_testing_2.png"><br/>
-    According to the testing result, its accuracy (~61%) is worse than that of Section 4.0. It not only fails to reduce the false positive, but also makes the false negative worse. Thus, it has been concluded that training with extra Class 0 (without cube) images does not improve the testing result. Also, since the training accuracy slightly improves (95% -> 97%), it is possible that adding extra Class 0 images exacerbates overfitting problem.</p>
-
-    <h4>4.2 Deeper Convolutional Neural Network (CNN)</h4>
-    <p></p>
+	<h3>4. Deep Learning Process</h3>
     <hr/>
-    <h3>Reference</h3>
-	<hr/>
-	<i>Updated at April 2020</i>
 </body>
 </html>
