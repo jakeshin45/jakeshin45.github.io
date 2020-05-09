@@ -26,7 +26,7 @@
 	<h3>3. Data Collection</h3>
 	<p>Even though the Professor Touretzky suggested collecting the image data by Cozmo's camera with his <a href = "https://www.cs.cmu.edu/afs/cs/academic/class/15494-s20/projects/cubes/">TakePictures.fsm</a> code, I decided to collect the data by my smartphone (iPhone 7+) since placing Cozmo, checking his vision at computer, then taking picture requires much more labor and time than needed. However, data collected by Cozmo can be more exquisite, and more helpful for making better neural network. If time permits, I will try to collect the data by Cozmo, then compare the performance.</p>
 	
-	<h4>3.1 Training Data Images</h4>
+	<h4>3.1 Gathering Training Images Data</h4>
 	<p>All raw images, taken from the smart-phone, have 4032 pixels width, and 3024 pixels height. Thus, the aspect ratio of all raw images is 4 : 3.</p>
 	<p>These are some of my raw images with cubes.<br/><br/>
     <img src = "Images/CogRob_Images/YesCube_1.jpg" width = "155" height = "100">
@@ -57,29 +57,68 @@
     <p>Fortunately, images from the Cozmo's camera has same aspect ratio as images from the smartphone. Thus, we only need to resize the image (divide both width and height with 12.6), then change RGB colors into grayscale.<br/><br/>
     <img src = "Images/CogRob_Images/ImageTransform.jpg" width = "650" height = "300">
     </p>
+    <h4>3.3 Collaboration at image collection</h4>
+    <p>My classmates, Evan, Kirubel, Carrie, Ting-Yu, Tyler, Krithika, and Hita, who works on the same topic but with different approaches, also collected image data. We merged the dataset as common dataset to benefit from each other. All common dataset can be found at <a href = "https://www.cs.cmu.edu/afs/cs/academic/class/15494-s20/projects/cubes/common_dataset/">here</a>.</p>
     <hr/>
 	<h3>4. Deep Learning</h3>
     <h4>4.1 Preprocessing</h4>
-    <h4>4.2 Convolutional Neural Network (CNN) architecture</h4>
+    <img src = "Images/CogRob_Images/12.png" width = "600">
+    <p>Before running the training, I preprocess whole training image data. I followed the Professor Touretzkey's suggestions, which is the cropping the right half of the image, turns into the grayscale, use random crop, then normalize the image.</p>
+    <h4>4.2 Architecture</h4>
+    <img src = "Images/CogRob_Images/14.png">
+    <p>General structure of my network architecture.</p>
+    <img src = "Images/CogRob_Images/15.png">
+    <p>Pytorch code to implement my architecture.</p>
     <h4>4.3 Result</h4>
+    <p>After several experiments at Section 5, this network gave me the best result on both training data and test data</p>
+    <img src = "Images/CogRob_Images/17.png">
     <hr/>
     <h3>5. Deep Learning Experiments and Analysis</h3>
+    <p>At this section, I changed some factors in the CNN, then compared the performance among several conditions. All experiments were run 3 times of training, then the final result is average of 3 experiments' result.</p> 
+    <h4>5.1 Optimizer: SGD vs Adam</h4>
+    <img src = "Images/CogRob_Images/5.png" width = "600" height = "200">
+    <img src = "Images/CogRob_Images/6.png" width = "600" height = "200">
+    <p>At this section, I compared the performance of SGD optimizer and Adam optimizer in same condition. Above charts represents results.<br/> Adam optimizer tend to show the better performance when other factors stay fixed.<br/>Interesting part is that both SGD Optimizer and Adam optimizer shows the best performance when learning rate is 0.0005 and the number of epochs are 250.</p>
+    <h4>5.2 Average Pooling vs Max Pooling</h4>
+    <img src = "Images/CogRob_Images/7.png" width = "600">
+    <p>Max Pooling is used in the optimal network twice, I switched them to Average Pooling to check how that makes a difference in the perfermance. I ran 250 epochs, and used Adam optimizer.</p>
+    <img src = "Images/CogRob_Images/8.png" width = "600">
+    <p>As a result, max pooling shows better performance than average pooling in both training and test set. At partial cube detection problem, max pooling seems to work better than average pooling.</p>
+    <h4>5.3 Sigmoid, ReLU, and number of Lineaer Layers</h4>
+    <p>At this section, I compared the performance of the ReLU and Sigmoid activation functions.</p>
+    <img src = "Images/CogRob_Images/9.png" width = "600">
+    <p>Also, I experimented how performance changes as more linear layers are added at the end</p>
+    <img src = "Images/CogRob_Images/10.png" width = "600">
+    <img src = "Images/CogRob_Images/11.png" width = "600">
+    <p>As a result, ReLU tends to show better performance than Sigmoid.<br/> As more linear layers are added with Sigmoid activation functions, the performance tends to get worse.<br/>As more linear layers are added with ReLU activation functions, the performance tends to get better.</p>
+
     <hr/>
     <h3>6. Demo with Cozmo</h4>
-    <h4>6.1 FlowChart
+    <h4>6.1 FlowChart</h4>
+    <img src = "Images/CogRob_Images/flowchart.jpg" width = "650" height = "450">
     <h4>6.2 When Cozmo sees full cube with no partial cube</h4>
     <iframe width="420" height="315" src="https://www.youtube.com/embed/4QBaHlsAA-4"></iframe>
     <h4>6.3 When Cozmo sees full cube with left partial cube</h4>
     <iframe width="420" height="315" src="https://www.youtube.com/embed/lZ9sL7kmJww"></iframe>
+    <p>Image below shows Cozmo's camera image before running the program & after running the program</p>
+    <img src = "Images/CogRob_Images/1.png">
     <h4>6.4 When Cozmo sees full cube with right partial cube</h4>
     <iframe width="420" height="315" src="https://www.youtube.com/embed/thllI4S_nTo"></iframe>
+    <p>Image below shows Cozmo's camera image before running the program & after running the program</p>
+    <img src = "Images/CogRob_Images/2.png">
     <h4>6.5 When Cozmo sees partial cube left</h4>
     <iframe width="420" height="315" src="https://www.youtube.com/embed/QhsCd-kJe_E"></iframe>
+    <p>Image below shows Cozmo's camera image before running the program & after running the program</p>
+    <img src = "Images/CogRob_Images/3.png">
     <h4>6.6 When Cozmo sees partial cube right</h4>
     <iframe width="420" height="315" src="https://www.youtube.com/embed/MF4Bv42DQnc"></iframe>
+    <p>Image below shows Cozmo's camera image before running the program & after running the program</p>
+    <img src = "Images/CogRob_Images/4.png">
     <hr/>
     <h3>7. Acknowledgement</h3>
-    <h4>I want to express a huge thanks to Professor Dave Touretzky. With</h4>
+    <p>I want to express a huge thanks to Professor <a href = "http://www.cs.cmu.edu/~dst/">Dave Touretzky</a>. With his wonderful course, I could learn various aspects of the robotics through Cozmo, and deep learning. His meticulous feedbacks and suggestions really helped me to improve the result of this final project.</p>
+    <p>Also, I want to say thank you very much to <a href = "https://www.csd.cs.cmu.edu/">Computer Science Department</a> at <a href = "https://www.cmu.edu/">Carnegie Mellon University</a>. After COVID-19 pandemic arises, their decision to distribute the new Cozmo product to each students in the class helped students to keep learn, and finally made me to complete this final project.</p>
     <hr/>
+    <i>Last updated at May 2020</i>
 </body>
 </html>
